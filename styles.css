@@ -1,8 +1,15 @@
-/* estilo do site*/
 body {
-    background-color: black; /* mudando a cor de fundo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    flex-direction: column;
+    background-color: black;
 }
 h1 {
     color: red; /* Altere 'blue' para qualquer cor que desejar */
-    text-align: center;
+}
+canvas {
+    border: 1px solid white;
 }
