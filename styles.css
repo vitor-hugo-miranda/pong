@@ -1,0 +1,8 @@
+/* estilo do site*/
+body {
+    background-color: black; /* mudando a cor de fundo */
+}
+h1 {
+    color: red; /* Altere 'blue' para qualquer cor que desejar */
+    text-align: center;
+}
