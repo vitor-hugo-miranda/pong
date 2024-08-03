@@ -8,7 +8,7 @@ body {
     background-color: black;
 }
 h1 {
-    color: red; /* Altere 'blue' para qualquer cor que desejar */
+    color: blue; /* Altere 'blue' para qualquer cor que desejar */
 }
 canvas {
     border: 1px solid white;
