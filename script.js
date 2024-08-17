@@ -15,9 +15,9 @@ window.onload = function() {
     context.fillRect(960, 100, 11, 100); // Posição x, y e largura e altura do retângulo
 
     
-     // Propriedades dos retângulos
-    var rect1 = { x: 80, y: 100, width: 11, height: 100, dy: 5, upKey: 'w', downKey: 's' };
-    var rect2 = { x: 1000, y: 300, width: 11, height: 100, dy: -5, upKey: 'ArrowUp', downKey: 'ArrowDown' };
+    // Propriedades dos retângulos
+    var rect1 = { x: 10, y: 100, width: 11, height: 100, dy: 5, upKey: 'w', downKey: 's' };
+    var rect2 = { x: 1080, y: 300, width: 11, height: 100, dy: -5, upKey: 'ArrowUp', downKey: 'ArrowDown' };
 
     // Propriedades da linha
     var lineX = canvas.width / 2; // Posição horizontal da linha (meio do canvas)
@@ -31,30 +31,47 @@ window.onload = function() {
         x: initialSpherePosition.x,
         y: initialSpherePosition.y,
         radius: 12,
-        dx: 6,
-        dy: 6
+        dx: 7,
+        dy: 7,
+        baseSpeed: 3, // Velocidade base da esfera
+        speedIncrease: 3.0 * 60 * 1000 // Tempo em milissegundos (1.5 minutos)
     };
 
     // Propriedades do placar
     var scoreLeft = 0;
     var scoreRight = 0;
     var scoreLimit = 15;
-    var scorePositionLeft = { x: 499, y: 30 };
-    var scorePositionRight = { x: canvas.width - 499, y: 30 };
+    var scorePositionLeft = { x: 400, y: 30 };
+    var scorePositionRight = { x: canvas.width - 400, y: 30 };
     var scoreColorLeft = 'yellow';    // Cor do placar esquerdo
     var scoreColorRight = 'red'; // Cor do placar direito
 
     // Propriedades da mensagem de vitória
-    var winMessage = "Se lascou! Esquerda: [scoreLeft] - Direita: [scoreRight]";
+    var winMessage = "Você goixta da derrotaum? ";
     var winMessageFontSize = 20; // Tamanho da fonte
     var winMessageColor = "orange"; // Cor da mensagem
     var showWinMessage = false;
 
+    // Propriedades do cronômetro
+    var startTime = Date.now();
+    var elapsedTime = 0;
+    var timerFontSize = 20; // Tamanho da fonte do cronômetro
+    var timerColor = "green"; // Cor do cronômetro
+    var timerPosition = { x: canvas.width / 2 - 50, y: 30 }; // Posição do cronômetro
+
+    // Propriedades do áudio
+    var som_guitarrinha = new Audio('guitarrinha.mp3');
+    som_guitarrinha.volume = 0.9
+   
+       
+            
+   
     // Estado das teclas pressionadas
     var keysPressed = {};
 
     // Estado de pausa
     var isPaused = false;
+   
 
     // Evento para detectar teclas pressionadas
     document.addEventListener('keydown', function(event) {
@@ -64,6 +81,7 @@ window.onload = function() {
         if (event.key === ' ') {
             isPaused = !isPaused; // Alterna o estado de pausa
         }
+
     });
 
     // Evento para detectar teclas liberadas
@@ -106,8 +124,26 @@ window.onload = function() {
         context.fillStyle = winMessageColor;
         context.fillText(
             winMessage.replace('[scoreLeft]', scoreLeft).replace('[scoreRight]', scoreRight),
-            canvas.width / 2 - context.measureText(winMessage).width / 4,
-            canvas.height / 1
+            canvas.width / 3.1 - context.measureText(winMessage).width / 2,
+            canvas.height / 2
+        );
+    }
+
+    function drawTimer() {
+        var time = elapsedTime;
+        var milliseconds = time % 1000;
+        time = (time - milliseconds) / 1000;
+        var seconds = time % 60;
+        time = (time - seconds) / 60;
+        var minutes = time % 60;
+        var hours = (time - minutes) / 60;
+
+        context.font = `${timerFontSize}px Arial`;
+        context.fillStyle = timerColor;
+        context.fillText(
+            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${milliseconds.toString().padStart(3, '0')}`,
+            timerPosition.x,
+            timerPosition.y
         );
     }
 
@@ -145,6 +181,13 @@ window.onload = function() {
     }
 
     function updateSphere() {
+        // Aumenta a velocidade da esfera após 1.5 minutos
+        if (elapsedTime >= sphere.speedIncrease && !sphere.speedIncreased) {
+            sphere.dx = sphere.dx > 0 ? sphere.dx + 2 : sphere.dx - 2;
+            sphere.dy = sphere.dy > 0 ? sphere.dy + 2 : sphere.dy - 2;
+            sphere.speedIncreased = true;
+        }
+
         sphere.x += sphere.dx;
         sphere.y += sphere.dy;
 
@@ -194,12 +237,13 @@ window.onload = function() {
         // Atualiza a posição da esfera
         updateSphere();
 
-        // Desenha os retângulos, a linha, a esfera e o placar
+        // Desenha os retângulos, a linha, a esfera, o placar e o cronômetro
         drawRectangle(rect1);
         drawRectangle(rect2);
         drawLine();
         drawSphere();
         drawScore();
+        drawTimer();
 
         // Desenha a mensagem de vitória se necessário
         if (showWinMessage) {
@@ -207,8 +251,10 @@ window.onload = function() {
         }
     }
 
-    function animate() {
+    function animate() { 
         if (!isPaused) {
+            som_guitarrinha.play();
+            elapsedTime = Date.now() - startTime;
             update();
         }
         requestAnimationFrame(animate);
@@ -216,7 +262,4 @@ window.onload = function() {
 
     // Inicia a animação
     animate();
-};
-    
-
-
+ }
